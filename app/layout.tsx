@@ -7,8 +7,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Void Nexus - Discord Server',
-  description: 'Selamat datang di Void Nexus. Tempat ngobrol, berbagi, dan bersenang-senang. Komunitas kita, dunia kita.',
+  title: 'YaiiCafe - Discord Server',
+  description: 'Selamat datang di YaiiCafe. Tempat ngobrol, berbagi, dan bersenang-senang. Komunitas kita, dunia kita.',
   generator: 'v0.app',
   icons: {
     icon: [
