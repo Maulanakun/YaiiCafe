@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import AvatarViewer from './avatar-viewer';
@@ -59,6 +59,73 @@ const mockAvatars = [
 export default function AvatarsSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Create particle effect for carousel
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx || !containerRef.current) return;
+
+    canvas.width = containerRef.current.offsetWidth;
+    canvas.height = containerRef.current.offsetHeight;
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.pointerEvents = 'none';
+    canvas.style.opacity = '0.4';
+    canvas.style.zIndex = '1';
+
+    const particles: Array<{
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      life: number;
+      size: number;
+    }> = [];
+
+    const createParticle = () => {
+      if (Math.random() > 0.97) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          life: 1,
+          size: Math.random() * 2 + 1,
+        });
+      }
+    };
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'rgba(139, 92, 246, 0.6)';
+
+      particles.forEach((p, idx) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.01;
+
+        if (p.life > 0) {
+          ctx.globalAlpha = p.life * 0.6;
+          ctx.fillRect(p.x, p.y, p.size, p.size);
+        } else {
+          particles.splice(idx, 1);
+        }
+      });
+
+      createParticle();
+      requestAnimationFrame(animate);
+    };
+
+    containerRef.current.appendChild(canvas);
+    animate();
+
+    return () => {
+      canvas.remove();
+    };
+  }, []);
 
   const goToSlide = (index: number) => {
     setCurrentIndex((index + mockAvatars.length) % mockAvatars.length);
@@ -89,6 +156,7 @@ export default function AvatarsSection() {
           position: relative;
           width: 100%;
           margin-bottom: 60px;
+          z-index: 2;
         }
 
         .carousel-wrapper {
@@ -98,31 +166,51 @@ export default function AvatarsSection() {
           justify-content: center;
           gap: 24px;
           padding: 40px 20px;
-          perspective: 1000px;
+          perspective: 1200px;
+          animation: carouselFadeIn 0.6s ease 0.3s forwards;
+          opacity: 0;
+        }
+
+        @keyframes carouselFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         .carousel-btn {
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
-          width: 44px;
-          height: 44px;
+          width: 48px;
+          height: 48px;
           border-radius: 12px;
-          border: 1px solid rgba(139, 92, 246, 0.3);
+          border: 2px solid rgba(139, 92, 246, 0.3);
           background: rgba(139, 92, 246, 0.1);
           color: rgba(255, 255, 255, 0.7);
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
           z-index: 20;
+          backdrop-filter: blur(10px);
         }
 
         .carousel-btn:hover {
-          background: rgba(139, 92, 246, 0.25);
-          border-color: rgba(139, 92, 246, 0.5);
+          background: rgba(139, 92, 246, 0.3);
+          border-color: rgba(139, 92, 246, 0.8);
           color: #fff;
+          transform: translateY(-50%) scale(1.1);
+          box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .carousel-btn:active {
+          transform: translateY(-50%) scale(0.95);
         }
 
         .carousel-btn.prev {
@@ -148,17 +236,31 @@ export default function AvatarsSection() {
           height: 380px;
           border-radius: 16px;
           overflow: hidden;
-          transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-          opacity: 0.4;
-          transform: scale(0.85) translateZ(-50px);
+          transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+          opacity: 0.3;
+          transform: scale(0.75) translateZ(-100px) rotateY(35deg);
           cursor: pointer;
+          filter: blur(2px);
         }
 
         .avatar-slide.center {
           opacity: 1;
-          transform: scale(1) translateZ(0);
+          transform: scale(1) translateZ(0) rotateY(0deg);
           z-index: 10;
-          box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3);
+          box-shadow: 0 30px 80px rgba(139, 92, 246, 0.4), inset 0 0 30px rgba(139, 92, 246, 0.1);
+          filter: blur(0);
+          animation: slideCenter 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideCenter {
+          from {
+            opacity: 0.5;
+            transform: scale(0.85) translateZ(-50px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateZ(0) rotateY(0deg);
+          }
         }
 
         .avatar-slide-image {
@@ -246,8 +348,21 @@ export default function AvatarsSection() {
         .carousel-indicators {
           display: flex;
           justify-content: center;
-          gap: 8px;
-          margin-top: 32px;
+          gap: 10px;
+          margin-top: 40px;
+          animation: indicatorsFadeIn 0.6s ease 0.5s forwards;
+          opacity: 0;
+        }
+
+        @keyframes indicatorsFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         .indicator {
@@ -255,24 +370,27 @@ export default function AvatarsSection() {
           height: 8px;
           border-radius: 50%;
           background: rgba(139, 92, 246, 0.2);
-          border: 1px solid rgba(139, 92, 246, 0.3);
+          border: 2px solid rgba(139, 92, 246, 0.3);
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .indicator.active {
-          background: rgba(139, 92, 246, 0.8);
+          background: linear-gradient(135deg, rgba(139, 92, 246, 1), rgba(200, 130, 252, 1));
           border-color: rgba(139, 92, 246, 1);
-          width: 24px;
+          width: 28px;
           border-radius: 4px;
+          box-shadow: 0 0 16px rgba(139, 92, 246, 0.4);
         }
 
         .indicator:hover {
-          background: rgba(139, 92, 246, 0.4);
+          background: rgba(139, 92, 246, 0.5);
+          border-color: rgba(139, 92, 246, 0.7);
+          transform: scale(1.2);
         }
       `}</style>
 
-      <div className="avatars-carousel-container">
+      <div className="avatars-carousel-container" ref={containerRef}>
         <div className="carousel-wrapper">
           <button className="carousel-btn prev" onClick={prevSlide}>
             <ChevronLeft size={20} />

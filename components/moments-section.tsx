@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Heart } from 'lucide-react';
 
@@ -12,6 +12,7 @@ const mockMoments = [
     author: 'Reza Wijaya',
     likes: 128,
     date: '2024-04-10',
+    height: 'tall',
   },
   {
     id: '2',
@@ -20,6 +21,7 @@ const mockMoments = [
     author: 'Budi Santoso',
     likes: 245,
     date: '2024-04-09',
+    height: 'normal',
   },
   {
     id: '3',
@@ -28,6 +30,7 @@ const mockMoments = [
     author: 'Dina Putri',
     likes: 189,
     date: '2024-04-08',
+    height: 'normal',
   },
   {
     id: '4',
@@ -36,6 +39,7 @@ const mockMoments = [
     author: 'Fathia Zahra',
     likes: 312,
     date: '2024-04-07',
+    height: 'tall',
   },
   {
     id: '5',
@@ -44,6 +48,7 @@ const mockMoments = [
     author: 'Aditya Kusuma',
     likes: 156,
     date: '2024-04-06',
+    height: 'normal',
   },
   {
     id: '6',
@@ -52,12 +57,78 @@ const mockMoments = [
     author: 'Siti Rahma',
     likes: 201,
     date: '2024-04-05',
+    height: 'tall',
   },
 ];
 
 export default function MomentsSection() {
   const [likedMoments, setLikedMoments] = useState<Set<string>>(new Set());
   const [hoveredMoment, setHoveredMoment] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Create particle effect background
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx || !containerRef.current) return;
+
+    canvas.width = containerRef.current.offsetWidth;
+    canvas.height = containerRef.current.offsetHeight;
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.pointerEvents = 'none';
+    canvas.style.opacity = '0.3';
+    canvas.style.zIndex = '1';
+
+    const particles: Array<{
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      life: number;
+    }> = [];
+
+    const createParticle = () => {
+      if (Math.random() > 0.98) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5,
+          life: 1,
+        });
+      }
+    };
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'rgba(139, 92, 246, 0.5)';
+
+      particles.forEach((p, idx) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.01;
+
+        if (p.life > 0) {
+          ctx.globalAlpha = p.life * 0.5;
+          ctx.fillRect(p.x, p.y, 2, 2);
+        } else {
+          particles.splice(idx, 1);
+        }
+      });
+
+      createParticle();
+      requestAnimationFrame(animate);
+    };
+
+    containerRef.current.appendChild(canvas);
+    animate();
+
+    return () => {
+      canvas.remove();
+    };
+  }, []);
 
   const toggleLike = (e: React.MouseEvent, momentId: string) => {
     e.preventDefault();
@@ -73,88 +144,100 @@ export default function MomentsSection() {
   return (
     <>
       <style>{`
-        .moments-masonry {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          gap: 24px;
+        .moments-container {
+          position: relative;
+          width: 100%;
           margin-bottom: 60px;
-          animation: staggerIn 0.6s ease forwards;
         }
 
-        @keyframes staggerIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+        .moments-masonry {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 24px;
+          position: relative;
+          z-index: 2;
         }
 
         .moment-tile {
           position: relative;
-          height: 320px;
           border-radius: 16px;
           overflow: hidden;
           cursor: pointer;
-          group: "moment";
-          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
           opacity: 0;
-          animation: tileAppear 0.5s ease forwards;
-          background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(200, 130, 252, 0.05) 100%);
+          animation: tileAppear 0.6s ease forwards;
+          background: rgba(30, 30, 50, 0.3);
           border: 1px solid rgba(139, 92, 246, 0.2);
-          box-shadow: 0 8px 32px rgba(139, 92, 246, 0.08);
+          backdrop-filter: blur(10px);
+        }
+
+        .moment-tile.tall {
+          grid-row: span 2;
+          min-height: 500px;
+        }
+
+        @media (max-width: 768px) {
+          .moment-tile.tall {
+            grid-row: span 1;
+            min-height: auto;
+          }
         }
 
         @keyframes tileAppear {
           from {
             opacity: 0;
-            transform: scale(0.9);
+            transform: translateY(40px) scale(0.9);
           }
           to {
             opacity: 1;
-            transform: scale(1);
+            transform: translateY(0) scale(1);
           }
         }
 
         .moment-tile:nth-child(1) { animation-delay: 0.1s; }
-        .moment-tile:nth-child(2) { animation-delay: 0.2s; }
-        .moment-tile:nth-child(3) { animation-delay: 0.3s; }
-        .moment-tile:nth-child(4) { animation-delay: 0.4s; }
-        .moment-tile:nth-child(5) { animation-delay: 0.5s; }
-        .moment-tile:nth-child(6) { animation-delay: 0.6s; }
+        .moment-tile:nth-child(2) { animation-delay: 0.15s; }
+        .moment-tile:nth-child(3) { animation-delay: 0.2s; }
+        .moment-tile:nth-child(4) { animation-delay: 0.25s; }
+        .moment-tile:nth-child(5) { animation-delay: 0.3s; }
+        .moment-tile:nth-child(6) { animation-delay: 0.35s; }
 
         .moment-tile:hover {
-          transform: translateY(-12px);
-          box-shadow: 0 16px 48px rgba(139, 92, 246, 0.25), inset 0 0 20px rgba(139, 92, 246, 0.1);
-          border-color: rgba(139, 92, 246, 0.4);
+          transform: translateY(-12px) scale(1.02);
+          box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3), inset 0 0 30px rgba(139, 92, 246, 0.05);
+          border-color: rgba(139, 92, 246, 0.6);
         }
 
         .moment-image-wrapper {
           position: relative;
           width: 100%;
           height: 100%;
+          min-height: 300px;
           overflow: hidden;
+          background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(200, 130, 252, 0.05));
+        }
+
+        .moment-tile.tall .moment-image-wrapper {
+          min-height: 500px;
         }
 
         .moment-image {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+          transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .moment-tile:hover .moment-image {
-          transform: scale(1.08) rotate(1deg);
+          transform: scale(1.12) rotate(1.5deg);
+          filter: brightness(1.15) saturate(1.1);
         }
 
         .moment-overlay {
           position: absolute;
           inset: 0;
-          background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0) 100%);
+          background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0) 100%);
           opacity: 0;
-          transition: opacity 0.3s ease;
+          transition: opacity 0.4s ease;
         }
 
         .moment-tile:hover .moment-overlay {
@@ -166,23 +249,26 @@ export default function MomentsSection() {
           bottom: 0;
           left: 0;
           right: 0;
-          padding: 24px;
+          padding: 20px;
           z-index: 10;
-          transform: translateY(20px);
-          transition: transform 0.3s ease;
+          transform: translateY(30px);
+          opacity: 0;
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .moment-tile:hover .moment-content {
           transform: translateY(0);
+          opacity: 1;
         }
 
         .moment-title {
           font-family: 'Syne', sans-serif;
           font-size: 16px;
-          font-weight: 700;
+          font-weight: 800;
           color: #fff;
-          margin-bottom: 8px;
+          margin-bottom: 10px;
           line-height: 1.3;
+          letter-spacing: -0.01em;
         }
 
         .moment-meta {
@@ -190,11 +276,11 @@ export default function MomentsSection() {
           align-items: center;
           justify-content: space-between;
           gap: 12px;
-          font-size: 12px;
         }
 
         .moment-author {
           font-family: 'Space Mono', monospace;
+          font-size: 11px;
           color: rgba(200, 130, 252, 0.9);
           letter-spacing: 0.05em;
         }
@@ -203,26 +289,28 @@ export default function MomentsSection() {
           display: flex;
           align-items: center;
           gap: 6px;
-          background: rgba(139, 92, 246, 0.25);
-          border: 1px solid rgba(139, 92, 246, 0.4);
+          background: rgba(139, 92, 246, 0.3);
+          border: 1px solid rgba(139, 92, 246, 0.5);
           padding: 6px 12px;
           border-radius: 8px;
-          color: rgba(255, 255, 255, 0.8);
+          color: rgba(255, 255, 255, 0.9);
           cursor: pointer;
           transition: all 0.3s ease;
           font-weight: 600;
           font-size: 11px;
+          font-family: 'Space Mono', monospace;
         }
 
         .moment-like-btn:hover {
-          background: rgba(139, 92, 246, 0.4);
-          border-color: rgba(139, 92, 246, 0.6);
+          background: rgba(139, 92, 246, 0.5);
+          border-color: rgba(139, 92, 246, 0.8);
           color: #fff;
+          transform: scale(1.05);
         }
 
         .moment-like-btn.liked {
-          background: rgba(239, 68, 68, 0.3);
-          border-color: rgba(239, 68, 68, 0.5);
+          background: rgba(239, 68, 68, 0.4);
+          border-color: rgba(239, 68, 68, 0.6);
           color: #ff6b6b;
         }
 
@@ -233,21 +321,22 @@ export default function MomentsSection() {
         }
 
         .moment-like-btn.liked .heart-icon {
-          animation: heartBeat 0.4s ease;
+          animation: heartBeat 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         @keyframes heartBeat {
           0%, 100% { transform: scale(1); }
-          25% { transform: scale(1.3); }
-          50% { transform: scale(1); }
+          30% { transform: scale(1.35); }
+          60% { transform: scale(1); }
         }
       `}</style>
 
-      <div className="moments-masonry">
+      <div className="moments-container" ref={containerRef}>
+        <div className="moments-masonry">
         {mockMoments.map((moment) => (
           <div
             key={moment.id}
-            className="moment-tile"
+            className={`moment-tile ${moment.height === 'tall' ? 'tall' : ''}`}
             onMouseEnter={() => setHoveredMoment(moment.id)}
             onMouseLeave={() => setHoveredMoment(null)}
           >
@@ -271,7 +360,7 @@ export default function MomentsSection() {
                   onClick={(e) => toggleLike(e, moment.id)}
                 >
                   <Heart className="heart-icon" fill={likedMoments.has(moment.id) ? 'currentColor' : 'none'} />
-                  {likedMoments.has(moment.id) ? likedMoments.size > 0 ? moment.likes + 1 : moment.likes + 1 : moment.likes}
+                  {likedMoments.has(moment.id) ? moment.likes + 1 : moment.likes}
                 </button>
               </div>
             </div>
