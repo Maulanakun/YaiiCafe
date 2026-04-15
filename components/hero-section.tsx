@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { Volume2, VolumeX, Play } from 'lucide-react';
+import Link from 'next/link';
 
 export default function HeroSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -543,7 +544,7 @@ export default function HeroSection() {
             </svg>
             Join Server
           </a>
-          <button className="btn-explore">Explore ↓</button>
+          <Link href="/explore" className="btn-explore">Explore ↓</Link>
         </div>
       </div>
 
