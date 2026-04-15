@@ -8,7 +8,7 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: 'YaiiCafe - Discord Server',
-  description: 'Selamat datang di YaiiCafe. Tempat ngobrol, berbagi, dan bersenang-senang. Komunitas kita, dunia kita.',
+  description: 'Selamat datang di YaiiCafe. Tempat ngobrol, berbagi, dan bersenang-senang. Jelajahi komunitas, moment gaming, dan avatar 3D.',
   generator: 'v0.app',
   icons: {
     icon: [

@@ -543,7 +543,7 @@ export default function HeroSection() {
             </svg>
             Join Server
           </a>
-          <button className="btn-explore">Explore ↓</button>
+          <a href="/explore" className="btn-explore">Explore ↓</a>
         </div>
       </div>
 
