@@ -87,235 +87,190 @@ const mockMembers = [
   },
 ];
 
+const statusEmoji = {
+  online: '●',
+  idle: '◐',
+  offline: '○',
+};
+
 export default function MembersSection() {
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const selectedMember = mockMembers.find(m => m.id === selectedMemberId);
 
   return (
     <>
       <style>{`
-        .members-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 24px;
-          margin-bottom: 60px;
-        }
-
-        .member-item {
+        .members-bubble-container {
           position: relative;
-          cursor: pointer;
-          animation: slideUp 0.5s ease forwards;
-          opacity: 0;
+          width: 100%;
+          min-height: 600px;
+          margin-bottom: 60px;
+          perspective: 1000px;
         }
 
-        @keyframes slideUp {
+        .members-orbit {
+          position: relative;
+          width: 100%;
+          height: 600px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .member-bubble {
+          position: absolute;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          opacity: 0;
+          animation: bubbleFloat 0.8s ease forwards;
+        }
+
+        @keyframes bubbleFloat {
           from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: scale(0.3);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
+            transform: scale(1);
           }
         }
 
-        .member-item:nth-child(1) { animation-delay: 0.05s; }
-        .member-item:nth-child(2) { animation-delay: 0.1s; }
-        .member-item:nth-child(3) { animation-delay: 0.15s; }
-        .member-item:nth-child(4) { animation-delay: 0.2s; }
-        .member-item:nth-child(5) { animation-delay: 0.25s; }
-        .member-item:nth-child(6) { animation-delay: 0.3s; }
-        .member-item:nth-child(7) { animation-delay: 0.35s; }
-        .member-item:nth-child(8) { animation-delay: 0.4s; }
+        .member-bubble:nth-child(1) { animation-delay: 0.1s; }
+        .member-bubble:nth-child(2) { animation-delay: 0.2s; }
+        .member-bubble:nth-child(3) { animation-delay: 0.3s; }
+        .member-bubble:nth-child(4) { animation-delay: 0.4s; }
+        .member-bubble:nth-child(5) { animation-delay: 0.5s; }
+        .member-bubble:nth-child(6) { animation-delay: 0.6s; }
+        .member-bubble:nth-child(7) { animation-delay: 0.7s; }
+        .member-bubble:nth-child(8) { animation-delay: 0.8s; }
 
-        .member-item::before {
-          content: '';
-          position: absolute;
-          inset: -1px;
-          background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(200, 130, 252, 0.2));
-          border-radius: 16px;
-          opacity: 0;
-          transition: opacity 0.3s ease;
-          z-index: -1;
-          blur: blur(10px);
-        }
-
-        .member-item:hover::before {
-          opacity: 1;
-        }
-
-        .member-inner {
-          position: relative;
-          padding: 24px;
-          border-radius: 16px;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          background: rgba(255, 255, 255, 0.02);
-          backdrop-filter: blur(8px);
-          transition: all 0.3s ease;
-          overflow: hidden;
-        }
-
-        .member-item:hover .member-inner {
-          border-color: rgba(139, 92, 246, 0.3);
-          background: rgba(139, 92, 246, 0.05);
-          transform: translateY(-6px);
-        }
-
-        .member-avatar-container {
+        .bubble-avatar {
           position: relative;
           width: 100px;
           height: 100px;
-          margin: 0 auto 16px;
-          margin-bottom: 20px;
+          border-radius: 50%;
+          overflow: hidden;
+          border: 3px solid rgba(139, 92, 246, 0.4);
+          box-shadow: 0 0 20px rgba(139, 92, 246, 0.2), inset 0 0 20px rgba(139, 92, 246, 0.1);
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(200, 130, 252, 0.1));
         }
 
-        .member-avatar {
+        .member-bubble:hover .bubble-avatar {
+          width: 120px;
+          height: 120px;
+          border-color: rgba(139, 92, 246, 0.8);
+          box-shadow: 0 0 30px rgba(139, 92, 246, 0.4), inset 0 0 20px rgba(139, 92, 246, 0.15);
+          filter: brightness(1.1);
+        }
+
+        .bubble-avatar img {
           width: 100%;
           height: 100%;
-          border-radius: 12px;
           object-fit: cover;
-          transition: all 0.3s ease;
         }
 
-        .member-item:hover .member-avatar {
-          transform: scale(1.05);
-        }
-
-        .member-status-badge {
+        .bubble-status {
           position: absolute;
-          bottom: 0;
-          right: 0;
-          width: 24px;
-          height: 24px;
+          bottom: -8px;
+          right: -8px;
+          width: 32px;
+          height: 32px;
           border-radius: 50%;
-          border: 3px solid rgba(5, 5, 15, 0.8);
+          border: 3px solid rgba(5, 5, 15, 0.9);
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 12px;
-        }
-
-        .member-status-badge.online {
-          background: #10b981;
-        }
-
-        .member-status-badge.idle {
-          background: #f59e0b;
-        }
-
-        .member-status-badge.offline {
-          background: #6b7280;
-        }
-
-        .member-name {
-          font-family: 'Syne', sans-serif;
           font-size: 16px;
+          background: rgba(5, 5, 15, 0.9);
+        }
+
+        .status-online { color: #10b981; }
+        .status-idle { color: #f59e0b; }
+        .status-offline { color: #6b7280; }
+
+        .bubble-info {
+          text-align: center;
+          margin-top: 16px;
+          opacity: 0;
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          transform: translateY(10px);
+        }
+
+        .member-bubble:hover .bubble-info {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .bubble-name {
+          font-family: 'Syne', sans-serif;
+          font-size: 14px;
           font-weight: 700;
           color: #fff;
-          text-align: center;
           margin-bottom: 4px;
         }
 
-        .member-role {
+        .bubble-role {
           font-family: 'Space Mono', monospace;
-          font-size: 11px;
-          letter-spacing: 0.05em;
+          font-size: 10px;
+          letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: rgba(139, 92, 246, 0.7);
-          text-align: center;
-          margin-bottom: 16px;
+          color: rgba(139, 92, 246, 0.8);
         }
 
-        .member-games {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 6px;
-          margin-bottom: 12px;
-          justify-content: center;
-        }
-
-        .game-badge {
-          display: inline-block;
-          padding: 4px 10px;
-          border-radius: 6px;
-          background: rgba(124, 58, 237, 0.15);
-          color: rgba(139, 92, 246, 0.9);
-          font-size: 10px;
-          font-family: 'Space Mono', monospace;
-          border: 1px solid rgba(139, 92, 246, 0.2);
-        }
-
-        .member-item:hover .game-badge {
-          background: rgba(124, 58, 237, 0.25);
-          border-color: rgba(139, 92, 246, 0.4);
-        }
-
-        .member-joined {
-          font-size: 10px;
-          color: rgba(255, 255, 255, 0.3);
-          text-align: center;
-          font-family: 'Space Mono', monospace;
-        }
-
-        .member-action-hint {
-          position: absolute;
-          top: 12px;
-          right: 12px;
-          width: 28px;
-          height: 28px;
-          border-radius: 8px;
-          background: rgba(124, 58, 237, 0.1);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: rgba(139, 92, 246, 0.6);
-          font-size: 14px;
-          transition: all 0.3s ease;
-          opacity: 0;
-        }
-
-        .member-item:hover .member-action-hint {
-          opacity: 1;
-          background: rgba(124, 58, 237, 0.2);
+        .member-bubble.hovered {
+          z-index: 50;
         }
       `}</style>
 
-      <div className="members-grid">
-        {mockMembers.map((member) => (
-          <div
-            key={member.id}
-            className="member-item"
-            onClick={() => setSelectedMemberId(member.id)}
-          >
-            <div className="member-inner">
-              <div className="member-action-hint">→</div>
-              <div className="member-avatar-container">
-                <Image
-                  src={member.avatar}
-                  alt={member.name}
-                  width={100}
-                  height={100}
-                  className="member-avatar"
-                />
-                <div className={`member-status-badge ${member.status}`}>
-                  {member.status === 'online' && '●'}
-                  {member.status === 'idle' && '◐'}
-                  {member.status === 'offline' && '○'}
+      <div className="members-bubble-container">
+        <div className="members-orbit">
+          {mockMembers.map((member, index) => {
+            const totalMembers = mockMembers.length;
+            const angle = (index / totalMembers) * Math.PI * 2;
+            const radius = 180;
+            const x = Math.cos(angle) * radius;
+            const y = Math.sin(angle) * radius;
+
+            return (
+              <div
+                key={member.id}
+                className={`member-bubble ${hoveredId === member.id ? 'hovered' : ''}`}
+                style={{
+                  transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+                  left: '50%',
+                  top: '50%',
+                }}
+                onClick={() => setSelectedMemberId(member.id)}
+                onMouseEnter={() => setHoveredId(member.id)}
+                onMouseLeave={() => setHoveredId(null)}
+              >
+                <div className="bubble-avatar">
+                  <Image
+                    src={member.avatar}
+                    alt={member.name}
+                    width={120}
+                    height={120}
+                    priority
+                  />
+                  <div className={`bubble-status status-${member.status}`}>
+                    {statusEmoji[member.status as keyof typeof statusEmoji]}
+                  </div>
+                </div>
+                <div className="bubble-info">
+                  <div className="bubble-name">{member.name}</div>
+                  <div className="bubble-role">{member.role}</div>
                 </div>
               </div>
-              <h3 className="member-name">{member.name}</h3>
-              <p className="member-role">{member.role}</p>
-              <div className="member-games">
-                {member.gamesFavorite.map((game) => (
-                  <span key={game} className="game-badge">
-                    {game}
-                  </span>
-                ))}
-              </div>
-              <p className="member-joined">Joined {member.joinedDate}</p>
-            </div>
-          </div>
-        ))}
+            );
+          })}
+        </div>
       </div>
 
       {selectedMember && (

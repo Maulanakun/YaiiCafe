@@ -73,27 +73,44 @@ export default function MomentsSection() {
   return (
     <>
       <style>{`
-        .moments-gallery {
+        .moments-masonry {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-          gap: 28px;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 24px;
           margin-bottom: 60px;
+          animation: staggerIn 0.6s ease forwards;
         }
 
-        .moment-item {
+        @keyframes staggerIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .moment-tile {
           position: relative;
-          height: 380px;
+          height: 320px;
           border-radius: 16px;
           overflow: hidden;
           cursor: pointer;
-          animation: popIn 0.5s ease forwards;
+          group: "moment";
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
           opacity: 0;
+          animation: tileAppear 0.5s ease forwards;
+          background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(200, 130, 252, 0.05) 100%);
+          border: 1px solid rgba(139, 92, 246, 0.2);
+          box-shadow: 0 8px 32px rgba(139, 92, 246, 0.08);
         }
 
-        @keyframes popIn {
+        @keyframes tileAppear {
           from {
             opacity: 0;
-            transform: scale(0.95);
+            transform: scale(0.9);
           }
           to {
             opacity: 1;
@@ -101,162 +118,161 @@ export default function MomentsSection() {
           }
         }
 
-        .moment-item:nth-child(1) { animation-delay: 0.05s; }
-        .moment-item:nth-child(2) { animation-delay: 0.1s; }
-        .moment-item:nth-child(3) { animation-delay: 0.15s; }
-        .moment-item:nth-child(4) { animation-delay: 0.2s; }
-        .moment-item:nth-child(5) { animation-delay: 0.25s; }
-        .moment-item:nth-child(6) { animation-delay: 0.3s; }
+        .moment-tile:nth-child(1) { animation-delay: 0.1s; }
+        .moment-tile:nth-child(2) { animation-delay: 0.2s; }
+        .moment-tile:nth-child(3) { animation-delay: 0.3s; }
+        .moment-tile:nth-child(4) { animation-delay: 0.4s; }
+        .moment-tile:nth-child(5) { animation-delay: 0.5s; }
+        .moment-tile:nth-child(6) { animation-delay: 0.6s; }
+
+        .moment-tile:hover {
+          transform: translateY(-12px);
+          box-shadow: 0 16px 48px rgba(139, 92, 246, 0.25), inset 0 0 20px rgba(139, 92, 246, 0.1);
+          border-color: rgba(139, 92, 246, 0.4);
+        }
+
+        .moment-image-wrapper {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+        }
 
         .moment-image {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .moment-item:hover .moment-image {
-          transform: scale(1.08);
+        .moment-tile:hover .moment-image {
+          transform: scale(1.08) rotate(1deg);
         }
 
         .moment-overlay {
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, transparent 0%, transparent 40%, rgba(0, 0, 0, 0.8) 100%);
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-end;
-          padding: 24px;
-          transition: all 0.3s ease;
+          background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0) 100%);
           opacity: 0;
+          transition: opacity 0.3s ease;
         }
 
-        .moment-item:hover .moment-overlay {
+        .moment-tile:hover .moment-overlay {
           opacity: 1;
+        }
+
+        .moment-content {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          padding: 24px;
+          z-index: 10;
+          transform: translateY(20px);
+          transition: transform 0.3s ease;
+        }
+
+        .moment-tile:hover .moment-content {
+          transform: translateY(0);
         }
 
         .moment-title {
           font-family: 'Syne', sans-serif;
-          font-size: 18px;
+          font-size: 16px;
           font-weight: 700;
           color: #fff;
-          margin-bottom: 6px;
+          margin-bottom: 8px;
+          line-height: 1.3;
+        }
+
+        .moment-meta {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          font-size: 12px;
         }
 
         .moment-author {
           font-family: 'Space Mono', monospace;
-          font-size: 11px;
+          color: rgba(200, 130, 252, 0.9);
           letter-spacing: 0.05em;
-          color: rgba(139, 92, 246, 0.8);
-          margin-bottom: 12px;
-        }
-
-        .moment-actions {
-          display: flex;
-          gap: 12px;
-          align-items: center;
         }
 
         .moment-like-btn {
           display: flex;
           align-items: center;
           gap: 6px;
+          background: rgba(139, 92, 246, 0.25);
+          border: 1px solid rgba(139, 92, 246, 0.4);
           padding: 6px 12px;
           border-radius: 8px;
-          background: rgba(124, 58, 237, 0.2);
-          border: 1px solid rgba(139, 92, 246, 0.4);
           color: rgba(255, 255, 255, 0.8);
-          font-family: 'Space Mono', monospace;
-          font-size: 12px;
           cursor: pointer;
           transition: all 0.3s ease;
+          font-weight: 600;
+          font-size: 11px;
         }
 
         .moment-like-btn:hover {
-          background: rgba(124, 58, 237, 0.3);
+          background: rgba(139, 92, 246, 0.4);
           border-color: rgba(139, 92, 246, 0.6);
+          color: #fff;
         }
 
         .moment-like-btn.liked {
-          background: rgba(239, 68, 68, 0.25);
+          background: rgba(239, 68, 68, 0.3);
           border-color: rgba(239, 68, 68, 0.5);
-          color: #fca5a5;
+          color: #ff6b6b;
         }
 
-        .moment-like-btn.liked svg {
-          fill: currentColor;
+        .heart-icon {
+          width: 14px;
+          height: 14px;
+          transition: all 0.3s ease;
+        }
+
+        .moment-like-btn.liked .heart-icon {
           animation: heartBeat 0.4s ease;
         }
 
         @keyframes heartBeat {
-          0% { transform: scale(1); }
+          0%, 100% { transform: scale(1); }
           25% { transform: scale(1.3); }
-          50% { transform: scale(1.1); }
-          100% { transform: scale(1); }
-        }
-
-        .moment-date {
-          font-family: 'Space Mono', monospace;
-          font-size: 10px;
-          color: rgba(255, 255, 255, 0.4);
-        }
-
-        .moment-badge {
-          position: absolute;
-          top: 12px;
-          right: 12px;
-          padding: 6px 12px;
-          border-radius: 8px;
-          background: rgba(0, 0, 0, 0.4);
-          backdrop-filter: blur(8px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          font-family: 'Space Mono', monospace;
-          font-size: 10px;
-          color: rgba(255, 255, 255, 0.7);
-          opacity: 0;
-          transition: opacity 0.3s ease;
-        }
-
-        .moment-item:hover .moment-badge {
-          opacity: 1;
+          50% { transform: scale(1); }
         }
       `}</style>
 
-      <div className="moments-gallery">
-        {mockMoments.map((moment, index) => (
+      <div className="moments-masonry">
+        {mockMoments.map((moment) => (
           <div
             key={moment.id}
-            className="moment-item"
+            className="moment-tile"
             onMouseEnter={() => setHoveredMoment(moment.id)}
             onMouseLeave={() => setHoveredMoment(null)}
           >
-            <Image
-              src={moment.image}
-              alt={moment.title}
-              width={600}
-              height={400}
-              className="moment-image"
-            />
+            <div className="moment-image-wrapper">
+              <Image
+                src={moment.image}
+                alt={moment.title}
+                fill
+                className="moment-image"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              />
+              <div className="moment-overlay" />
+            </div>
 
-            <div className="moment-badge">📸 Gaming Moment</div>
-
-            <div className="moment-overlay">
+            <div className="moment-content">
               <h3 className="moment-title">{moment.title}</h3>
-              <p className="moment-author">by {moment.author}</p>
-              <div className="moment-actions">
+              <div className="moment-meta">
+                <span className="moment-author">{moment.author}</span>
                 <button
                   className={`moment-like-btn ${likedMoments.has(moment.id) ? 'liked' : ''}`}
                   onClick={(e) => toggleLike(e, moment.id)}
                 >
-                  <Heart size={14} />
-                  <span>{moment.likes + (likedMoments.has(moment.id) ? 1 : 0)}</span>
+                  <Heart className="heart-icon" fill={likedMoments.has(moment.id) ? 'currentColor' : 'none'} />
+                  {likedMoments.has(moment.id) ? likedMoments.size > 0 ? moment.likes + 1 : moment.likes + 1 : moment.likes}
                 </button>
-                <span className="moment-date">
-                  {new Date(moment.date).toLocaleDateString('id-ID', {
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                </span>
               </div>
             </div>
           </div>

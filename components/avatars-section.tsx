@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import AvatarViewer from './avatar-viewer';
 
 const mockAvatars = [
@@ -48,189 +49,338 @@ const mockAvatars = [
   {
     id: '6',
     memberName: 'Eko Prasetya',
-    avatarName: 'Casual Gamer',
-    modelUrl: '/avatars/casual.glb',
-    thumbnail: 'https://images.unsplash.com/photo-1539571696357-5a69c006ae49?w=400&h=400&fit=crop',
-    description: 'Avatar casual tapi stylish untuk daily gaming',
+    avatarName: 'Cyber Ninja',
+    modelUrl: '/avatars/ninja.glb',
+    thumbnail: 'https://images.unsplash.com/photo-1518611505868-48abc8a8d084?w=400&h=400&fit=crop',
+    description: 'Avatar dengan costume ninja futuristik',
   },
 ];
 
 export default function AvatarsSection() {
-  const [selectedAvatar, setSelectedAvatar] = useState<typeof mockAvatars[0] | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
+
+  const goToSlide = (index: number) => {
+    setCurrentIndex((index + mockAvatars.length) % mockAvatars.length);
+  };
+
+  const nextSlide = () => {
+    goToSlide(currentIndex + 1);
+  };
+
+  const prevSlide = () => {
+    goToSlide(currentIndex - 1);
+  };
+
+  const getVisibleAvatars = () => {
+    const visible = [];
+    for (let i = -1; i <= 1; i++) {
+      visible.push(mockAvatars[(currentIndex + i + mockAvatars.length) % mockAvatars.length]);
+    }
+    return visible;
+  };
+
+  const visibleAvatars = getVisibleAvatars();
 
   return (
     <>
       <style>{`
-        .avatars-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 24px;
+        .avatars-carousel-container {
+          position: relative;
+          width: 100%;
           margin-bottom: 60px;
         }
 
-        .avatar-item {
+        .carousel-wrapper {
           position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 24px;
+          padding: 40px 20px;
+          perspective: 1000px;
+        }
+
+        .carousel-btn {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          border: 1px solid rgba(139, 92, 246, 0.3);
+          background: rgba(139, 92, 246, 0.1);
+          color: rgba(255, 255, 255, 0.7);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          z-index: 20;
+        }
+
+        .carousel-btn:hover {
+          background: rgba(139, 92, 246, 0.25);
+          border-color: rgba(139, 92, 246, 0.5);
+          color: #fff;
+        }
+
+        .carousel-btn.prev {
+          left: 0;
+        }
+
+        .carousel-btn.next {
+          right: 0;
+        }
+
+        .carousel-track {
+          display: flex;
+          gap: 20px;
+          justify-content: center;
+          align-items: center;
+          flex: 1;
+          max-width: 1000px;
+        }
+
+        .avatar-slide {
+          position: relative;
+          width: 240px;
+          height: 380px;
           border-radius: 16px;
           overflow: hidden;
+          transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+          opacity: 0.4;
+          transform: scale(0.85) translateZ(-50px);
           cursor: pointer;
-          animation: fadeInScale 0.5s ease forwards;
-          opacity: 0;
-          height: 360px;
         }
 
-        @keyframes fadeInScale {
-          from {
-            opacity: 0;
-            transform: translateY(20px) scale(0.98);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
+        .avatar-slide.center {
+          opacity: 1;
+          transform: scale(1) translateZ(0);
+          z-index: 10;
+          box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3);
         }
 
-        .avatar-item:nth-child(1) { animation-delay: 0.05s; }
-        .avatar-item:nth-child(2) { animation-delay: 0.1s; }
-        .avatar-item:nth-child(3) { animation-delay: 0.15s; }
-        .avatar-item:nth-child(4) { animation-delay: 0.2s; }
-        .avatar-item:nth-child(5) { animation-delay: 0.25s; }
-        .avatar-item:nth-child(6) { animation-delay: 0.3s; }
+        .avatar-slide-image {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(200, 130, 252, 0.1) 100%);
+          border: 1px solid rgba(139, 92, 246, 0.3);
+          overflow: hidden;
+        }
 
-        .avatar-thumbnail {
+        .avatar-slide img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .avatar-item:hover .avatar-thumbnail {
-          transform: scale(1.12) rotate(2deg);
+        .avatar-slide.center:hover img {
+          transform: scale(1.1);
         }
 
-        .avatar-content {
+        .avatar-overlay {
           position: absolute;
           inset: 0;
-          background: linear-gradient(135deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.9) 100%);
+          background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0) 100%);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          z-index: 5;
           display: flex;
           flex-direction: column;
           justify-content: flex-end;
-          padding: 20px;
-          transition: all 0.3s ease;
+          padding: 24px;
         }
 
-        .avatar-item:hover .avatar-content {
-          background: linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.95) 100%);
-        }
-
-        .avatar-member {
-          font-family: 'Space Mono', monospace;
-          font-size: 10px;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          color: rgba(139, 92, 246, 0.8);
-          margin-bottom: 6px;
-        }
-
-        .avatar-name {
-          font-family: 'Syne', sans-serif;
-          font-size: 20px;
-          font-weight: 800;
-          color: #fff;
-          margin-bottom: 8px;
-          letter-spacing: -0.01em;
-        }
-
-        .avatar-desc {
-          font-size: 12px;
-          color: rgba(255, 255, 255, 0.7);
-          margin-bottom: 16px;
-          line-height: 1.4;
-          opacity: 0;
-          transition: opacity 0.3s ease;
-        }
-
-        .avatar-item:hover .avatar-desc {
+        .avatar-slide.center .avatar-overlay {
           opacity: 1;
         }
 
-        .avatar-action {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 8px 16px;
-          border-radius: 8px;
-          background: rgba(124, 58, 237, 0.2);
-          border: 1px solid rgba(139, 92, 246, 0.4);
-          color: rgba(255, 255, 255, 0.8);
+        .avatar-info-title {
+          font-family: 'Syne', sans-serif;
+          font-size: 18px;
+          font-weight: 700;
+          color: #fff;
+          margin-bottom: 4px;
+        }
+
+        .avatar-info-member {
           font-family: 'Space Mono', monospace;
           font-size: 11px;
-          letter-spacing: 0.05em;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: rgba(200, 130, 252, 0.9);
+          margin-bottom: 12px;
+        }
+
+        .avatar-description {
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.7);
+          line-height: 1.4;
+          margin-bottom: 12px;
+        }
+
+        .avatar-view-btn {
+          padding: 8px 16px;
+          border-radius: 8px;
+          background: rgba(139, 92, 246, 0.3);
+          border: 1px solid rgba(139, 92, 246, 0.5);
+          color: rgba(255, 255, 255, 0.9);
+          font-family: 'Space Mono', monospace;
+          font-size: 11px;
           font-weight: 600;
+          letter-spacing: 0.05em;
           cursor: pointer;
           transition: all 0.3s ease;
-          opacity: 0;
-          transform: translateY(10px);
+          width: fit-content;
         }
 
-        .avatar-item:hover .avatar-action {
-          opacity: 1;
-          transform: translateY(0);
-          background: rgba(124, 58, 237, 0.35);
-          border-color: rgba(139, 92, 246, 0.6);
-        }
-
-        .avatar-action:hover {
-          background: rgba(124, 58, 237, 0.5);
+        .avatar-view-btn:hover {
+          background: rgba(139, 92, 246, 0.5);
           border-color: rgba(139, 92, 246, 0.8);
-          transform: translateY(-2px);
+          color: #fff;
         }
 
-        .avatar-badge {
-          position: absolute;
-          top: 12px;
-          right: 12px;
-          padding: 6px 12px;
-          border-radius: 8px;
-          background: rgba(0, 0, 0, 0.5);
-          backdrop-filter: blur(8px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          font-family: 'Space Mono', monospace;
-          font-size: 10px;
-          color: rgba(255, 255, 255, 0.7);
-          opacity: 0;
-          transition: opacity 0.3s ease;
+        .carousel-indicators {
+          display: flex;
+          justify-content: center;
+          gap: 8px;
+          margin-top: 32px;
         }
 
-        .avatar-item:hover .avatar-badge {
-          opacity: 1;
+        .indicator {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: rgba(139, 92, 246, 0.2);
+          border: 1px solid rgba(139, 92, 246, 0.3);
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+          background: rgba(139, 92, 246, 0.8);
+          border-color: rgba(139, 92, 246, 1);
+          width: 24px;
+          border-radius: 4px;
+        }
+
+        .indicator:hover {
+          background: rgba(139, 92, 246, 0.4);
         }
       `}</style>
 
-      <div className="avatars-grid">
-        {mockAvatars.map((avatar) => (
-          <div key={avatar.id} className="avatar-item" onClick={() => setSelectedAvatar(avatar)}>
-            <Image
-              src={avatar.thumbnail}
-              alt={avatar.avatarName}
-              width={400}
-              height={400}
-              className="avatar-thumbnail"
-            />
+      <div className="avatars-carousel-container">
+        <div className="carousel-wrapper">
+          <button className="carousel-btn prev" onClick={prevSlide}>
+            <ChevronLeft size={20} />
+          </button>
 
-            <div className="avatar-badge">3D Model</div>
-
-            <div className="avatar-content">
-              <p className="avatar-member">{avatar.memberName}</p>
-              <h3 className="avatar-name">{avatar.avatarName}</h3>
-              <p className="avatar-desc">{avatar.description}</p>
-              <button className="avatar-action">View 3D →</button>
-            </div>
+          <div className="carousel-track">
+            {visibleAvatars.map((avatar, index) => (
+              <div
+                key={avatar.id}
+                className={`avatar-slide ${index === 1 ? 'center' : ''}`}
+                onClick={() => {
+                  if (index === 1) {
+                    setSelectedAvatar(avatar.id);
+                  } else if (index === 0) {
+                    prevSlide();
+                  } else {
+                    nextSlide();
+                  }
+                }}
+              >
+                <div className="avatar-slide-image">
+                  <Image
+                    src={avatar.thumbnail}
+                    alt={avatar.avatarName}
+                    fill
+                    className="avatar-image"
+                    sizes="240px"
+                  />
+                  <div className="avatar-overlay">
+                    <h3 className="avatar-info-title">{avatar.avatarName}</h3>
+                    <p className="avatar-info-member">{avatar.memberName}</p>
+                    <p className="avatar-description">{avatar.description}</p>
+                    <button className="avatar-view-btn">View 3D</button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+
+          <button className="carousel-btn next" onClick={nextSlide}>
+            <ChevronRight size={20} />
+          </button>
+        </div>
+
+        <div className="carousel-indicators">
+          {mockAvatars.map((_, index) => (
+            <div
+              key={index}
+              className={`indicator ${index === currentIndex ? 'active' : ''}`}
+              onClick={() => goToSlide(index)}
+            />
+          ))}
+        </div>
       </div>
 
       {selectedAvatar && (
-        <AvatarViewer avatar={selectedAvatar} onClose={() => setSelectedAvatar(null)} />
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 100,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+          }}
+          onClick={() => setSelectedAvatar(null)}
+        >
+          <div
+            style={{
+              position: 'relative',
+              width: '90%',
+              maxWidth: '800px',
+              maxHeight: '90vh',
+              borderRadius: '20px',
+              overflow: 'hidden',
+              border: '1px solid rgba(139, 92, 246, 0.3)',
+              boxShadow: '0 20px 60px rgba(139, 92, 246, 0.2)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setSelectedAvatar(null)}
+              style={{
+                position: 'absolute',
+                top: '12px',
+                right: '12px',
+                zIndex: 10,
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                color: 'rgba(255, 255, 255, 0.8)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: '20px',
+              }}
+            >
+              ✕
+            </button>
+            <AvatarViewer avatarId={selectedAvatar} />
+          </div>
+        </div>
       )}
     </>
   );
