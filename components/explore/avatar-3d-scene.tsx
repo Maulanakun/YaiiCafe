@@ -1,77 +1,60 @@
 'use client';
 
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Sphere, Box, Torus } from '@react-three/drei';
-import { useRef, useMemo } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, useGLTF } from '@react-three/drei';
+import { Suspense, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 interface Avatar3DSceneProps {
-  avatarId: string;
+  glbUrl: string;
 }
 
-function AvatarCharacter({ avatarId }: { avatarId: string }) {
+function AvatarModel({ glbUrl }: { glbUrl: string }) {
+  const { scene } = useGLTF(glbUrl);
   const groupRef = useRef<THREE.Group>(null);
 
-  const colors = {
-    '1': { primary: '#c084fc', secondary: '#e879f9', accent: '#8b5cf6' },
-    '2': { primary: '#06b6d4', secondary: '#0891b2', accent: '#06d6ff' },
-    '3': { primary: '#10b981', secondary: '#059669', accent: '#6ee7b7' },
-    '4': { primary: '#f97316', secondary: '#ea580c', accent: '#fdba74' },
-    '5': { primary: '#6366f1', secondary: '#4f46e5', accent: '#818cf8' },
-  };
-
-  const colorSet = colors[avatarId as keyof typeof colors] || colors['1'];
-
-  useFrame(() => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += 0.003;
-    }
-  });
-
+  useEffect(() => {
+    if (!groupRef.current) return;
+  
+    const model = groupRef.current;
+  
+    // 1. Reset dulu
+    model.scale.set(1, 1, 1);
+    model.position.set(0, 0, 0);
+    model.rotation.set(0, 0, 0);
+  
+    // 2. Rotate biar hadap depan
+    model.rotation.y = Math.PI;
+  
+    // 3. Hitung bounding box
+    const box = new THREE.Box3().setFromObject(model);
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+  
+    box.getSize(size);
+    box.getCenter(center);
+  
+    // 4. Normalize tinggi (INI KUNCI)
+    const targetHeight = 2; // lebih kecil biar konsisten
+    const scale = targetHeight / size.y;
+    model.scale.setScalar(scale);
+  
+    // 5. Hitung ulang setelah scale
+    const box2 = new THREE.Box3().setFromObject(model);
+    const center2 = new THREE.Vector3();
+    box2.getCenter(center2);
+  
+    // 6. TARUH KAKI DI BAWAH + CENTER XZ
+    model.position.set(
+      -center2.x,
+      -box2.min.y,
+      -center2.z
+    );
+  
+  }, [glbUrl]);
   return (
-    <group ref={groupRef} position={[0, 0, 0]}>
-      {/* Head */}
-      <Sphere args={[1, 32, 32]} position={[0, 3, 0]}>
-        <meshStandardMaterial color={colorSet.primary} metalness={0.3} roughness={0.4} />
-      </Sphere>
-
-      {/* Eyes */}
-      <Sphere args={[0.3, 16, 16]} position={[-0.3, 3.5, 0.95]}>
-        <meshStandardMaterial color="#000000" />
-      </Sphere>
-      <Sphere args={[0.3, 16, 16]} position={[0.3, 3.5, 0.95]}>
-        <meshStandardMaterial color="#000000" />
-      </Sphere>
-
-      {/* Body */}
-      <Box args={[1.2, 2, 0.8]} position={[0, 1.2, 0]}>
-        <meshStandardMaterial color={colorSet.secondary} metalness={0.2} roughness={0.5} />
-      </Box>
-
-      {/* Left Arm */}
-      <Box args={[0.5, 2, 0.5]} position={[-1.2, 1.5, 0]}>
-        <meshStandardMaterial color={colorSet.primary} metalness={0.3} roughness={0.4} />
-      </Box>
-
-      {/* Right Arm */}
-      <Box args={[0.5, 2, 0.5]} position={[1.2, 1.5, 0]}>
-        <meshStandardMaterial color={colorSet.primary} metalness={0.3} roughness={0.4} />
-      </Box>
-
-      {/* Left Leg */}
-      <Box args={[0.5, 2, 0.5]} position={[-0.4, -1, 0]}>
-        <meshStandardMaterial color={colorSet.secondary} metalness={0.2} roughness={0.5} />
-      </Box>
-
-      {/* Right Leg */}
-      <Box args={[0.5, 2, 0.5]} position={[0.4, -1, 0]}>
-        <meshStandardMaterial color={colorSet.secondary} metalness={0.2} roughness={0.5} />
-      </Box>
-
-      {/* Accent Torus */}
-      <Torus args={[1.8, 0.2, 16, 100]} position={[0, 0, 0]} rotation={[0.5, 0, 0]}>
-        <meshStandardMaterial color={colorSet.accent} metalness={0.8} roughness={0.2} emissive={colorSet.accent} emissiveIntensity={0.3} />
-      </Torus>
+    <group ref={groupRef}>
+      <primitive object={scene} />
     </group>
   );
 }
@@ -79,26 +62,27 @@ function AvatarCharacter({ avatarId }: { avatarId: string }) {
 function Lights() {
   return (
     <>
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} intensity={1.5} color="#ffffff" />
-      <pointLight position={[-10, -10, 10]} intensity={0.8} color="#8b5cf6" />
+      <ambientLight intensity={0.6} />
+      <directionalLight position={[2, 4, 3]} intensity={1.5} />
+      <pointLight position={[-5, 5, 5]} intensity={0.8} color="#8b5cf6" />
     </>
   );
 }
 
-export default function Avatar3DScene({ avatarId }: Avatar3DSceneProps) {
+export default function Avatar3DScene({ glbUrl }: Avatar3DSceneProps) {
   return (
     <Canvas
-      camera={{ position: [0, 2, 5], fov: 50 }}
+    camera={{ position: [-1, 1, 4], fov: 10 }}
       style={{ width: '100%', height: '400px' }}
     >
       <Lights />
-      <AvatarCharacter avatarId={avatarId} />
+      <Suspense fallback={null}>
+        <AvatarModel glbUrl={glbUrl} />
+      </Suspense>
       <OrbitControls
         enableZoom={true}
-        enablePan={true}
-        autoRotate={true}
-        autoRotateSpeed={4}
+        enablePan={false}
+        target={[0, 1.5, 0]}
       />
     </Canvas>
   );

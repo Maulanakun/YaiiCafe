@@ -110,8 +110,7 @@ export default function HeroSection() {
       }
     };
 
-    canvasRef.current.addEventListener('mousemove', handleMouseMove);
-
+    window.addEventListener('mousemove', handleMouseMove);
     // Animation loop
     let animationId: number;
     const animate = () => {
@@ -190,6 +189,17 @@ export default function HeroSection() {
           cursor: pointer;
           transition: opacity 0.8s ease;
         }
+          .hero-actions {
+  pointer-events: auto;
+}
+
+.btn-join,
+.btn-explore {
+  pointer-events: auto;
+}
+  .hero-content {
+  pointer-events: none;
+}
         
         .enter-overlay.hidden {
           opacity: 0;
@@ -255,7 +265,6 @@ export default function HeroSection() {
   text-align: center;
   padding: 0 24px;
 
-  pointer-events: none; /* 🔥 ini penting */
 
   opacity: 0;
   transform: translateY(24px);

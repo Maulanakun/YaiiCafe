@@ -72,10 +72,15 @@ export default function MomentsView() {
   const [displayedMoments, setDisplayedMoments] = useState<Moment[]>([]);
 
   useEffect(() => {
-    // Staggered animation effect
+    setDisplayedMoments([]); // reset dulu
+  
     moments.forEach((_, index) => {
       setTimeout(() => {
-        setDisplayedMoments((prev) => [...prev, moments[index]]);
+        setDisplayedMoments((prev) => {
+          // prevent duplicate
+          if (prev.find((m) => m.id === moments[index].id)) return prev;
+          return [...prev, moments[index]];
+        });
       }, index * 100);
     });
   }, []);

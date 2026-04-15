@@ -21,31 +21,16 @@ const avatars = [
     name: 'Maulana Avatar',
     description: 'The founder\'s signature look',
     color: 'from-purple-500 to-pink-500',
+    glbUrl: '/dayat.glb', // <-- path ke file GLB
   },
   {
     id: '2',
     name: 'Cafe Manager Avatar',
     description: 'Friendly and welcoming',
     color: 'from-cyan-500 to-blue-500',
+    glbUrl: '/ucy (1).glb',
   },
-  {
-    id: '3',
-    name: 'Dev Assistant Avatar',
-    description: 'Tech-savvy developer',
-    color: 'from-green-500 to-emerald-500',
-  },
-  {
-    id: '4',
-    name: 'Designer Avatar',
-    description: 'Creative and stylish',
-    color: 'from-orange-500 to-red-500',
-  },
-  {
-    id: '5',
-    name: 'Community Star Avatar',
-    description: 'The life of the party',
-    color: 'from-indigo-500 to-purple-500',
-  },
+  // ... dst
 ];
 
 export default function AvatarView() {
@@ -61,8 +46,7 @@ export default function AvatarView() {
 
       {/* Main Display */}
       <div className="rounded-2xl overflow-hidden border border-purple-500/30 bg-gradient-to-br from-[#05050f] to-[#1a0033] p-8">
-        <Avatar3DScene avatarId={selectedAvatar} />
-      </div>
+      <Avatar3DScene glbUrl={avatars.find(a => a.id === selectedAvatar)?.glbUrl ?? ''} />      </div>
 
       {/* Selected Avatar Info */}
       <div className="text-center space-y-2">
