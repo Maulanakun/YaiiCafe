@@ -34,8 +34,11 @@ export default function ExploreBackground() {
       canvas: canvasRef.current,
       alpha: true,
       antialias: true,
+      premultipliedAlpha: false,
     });
     rendererRef.current = renderer;
+    renderer.setClearColor(0x05050f, 1);
+    renderer.setPixelRatio(window.devicePixelRatio);
 
     const handleResize = () => {
       const w = canvasRef.current?.clientWidth || 0;
