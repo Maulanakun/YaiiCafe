@@ -18,9 +18,9 @@ interface MemberDetailModalProps {
 }
 
 const statusColors = {
-  online: 'bg-green-500',
-  idle: 'bg-yellow-500',
-  offline: 'bg-slate-500',
+  online: '#10b981',
+  idle: '#f59e0b',
+  offline: '#6b7280',
 };
 
 const statusText = {
@@ -38,91 +38,302 @@ export default function MemberDetailModal({ member, onClose }: MemberDetailModal
 
   return (
     <>
+      <style>{`
+        .member-modal-backdrop {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.6);
+          backdrop-filter: blur(8px);
+          z-index: 40;
+          animation: backdropFade 0.3s ease;
+        }
+
+        @keyframes backdropFade {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        .member-modal {
+          position: fixed;
+          inset: 0;
+          z-index: 50;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 16px;
+        }
+
+        .member-modal-content {
+          background: linear-gradient(135deg, rgba(30, 30, 50, 0.9) 0%, rgba(20, 20, 40, 0.9) 100%);
+          border: 1px solid rgba(139, 92, 246, 0.3);
+          border-radius: 20px;
+          max-width: 420px;
+          width: 100%;
+          overflow: hidden;
+          animation: modalSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          box-shadow: 0 20px 60px rgba(124, 58, 237, 0.2);
+        }
+
+        @keyframes modalSlideUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .modal-header {
+          background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(200, 130, 252, 0.1) 100%);
+          padding: 24px;
+          border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+          position: relative;
+        }
+
+        .modal-close-btn {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          color: rgba(255, 255, 255, 0.7);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .modal-close-btn:hover {
+          background: rgba(255, 255, 255, 0.15);
+          color: #fff;
+        }
+
+        .modal-body {
+          padding: 32px 24px 24px;
+          position: relative;
+        }
+
+        .member-avatar-large {
+          position: relative;
+          width: 100px;
+          height: 100px;
+          margin: 0 auto 20px;
+          border-radius: 14px;
+          overflow: hidden;
+          border: 3px solid rgba(139, 92, 246, 0.4);
+          box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+        }
+
+        .member-avatar-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .member-status-indicator {
+          position: absolute;
+          bottom: -6px;
+          right: -6px;
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          border: 4px solid rgba(20, 20, 40, 0.9);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+        }
+
+        .modal-name {
+          font-family: 'Syne', sans-serif;
+          font-size: 24px;
+          font-weight: 800;
+          color: #fff;
+          text-align: center;
+          margin-bottom: 6px;
+        }
+
+        .modal-role {
+          font-family: 'Space Mono', monospace;
+          font-size: 11px;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: rgba(139, 92, 246, 0.8);
+          text-align: center;
+          margin-bottom: 16px;
+        }
+
+        .modal-bio {
+          font-size: 13px;
+          color: rgba(255, 255, 255, 0.6);
+          text-align: center;
+          line-height: 1.5;
+          margin-bottom: 20px;
+          padding: 12px 0;
+          border-top: 1px solid rgba(139, 92, 246, 0.2);
+          border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .modal-info {
+          margin-bottom: 20px;
+        }
+
+        .modal-info-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 10px 0;
+          font-size: 12px;
+        }
+
+        .modal-info-label {
+          color: rgba(255, 255, 255, 0.5);
+          font-family: 'Space Mono', monospace;
+          letter-spacing: 0.05em;
+        }
+
+        .modal-info-value {
+          color: rgba(255, 255, 255, 0.8);
+          font-weight: 500;
+        }
+
+        .modal-games {
+          margin-bottom: 20px;
+        }
+
+        .modal-games-label {
+          font-family: 'Space Mono', monospace;
+          font-size: 11px;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: rgba(255, 255, 255, 0.5);
+          margin-bottom: 10px;
+        }
+
+        .modal-games-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+
+        .game-tag {
+          display: inline-block;
+          padding: 6px 12px;
+          border-radius: 8px;
+          background: rgba(124, 58, 237, 0.15);
+          color: rgba(139, 92, 246, 0.9);
+          border: 1px solid rgba(139, 92, 246, 0.3);
+          font-size: 11px;
+          font-family: 'Space Mono', monospace;
+          transition: all 0.3s ease;
+        }
+
+        .game-tag:hover {
+          background: rgba(124, 58, 237, 0.25);
+          border-color: rgba(139, 92, 246, 0.5);
+        }
+
+        .modal-footer {
+          padding-top: 16px;
+          border-top: 1px solid rgba(139, 92, 246, 0.2);
+          display: flex;
+          gap: 8px;
+        }
+
+        .modal-btn {
+          flex: 1;
+          padding: 10px 16px;
+          border-radius: 8px;
+          border: none;
+          font-family: 'Space Mono', monospace;
+          font-size: 12px;
+          letter-spacing: 0.05em;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .modal-btn-close {
+          background: rgba(139, 92, 246, 0.15);
+          color: rgba(255, 255, 255, 0.7);
+          border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .modal-btn-close:hover {
+          background: rgba(139, 92, 246, 0.25);
+          color: #fff;
+          border-color: rgba(139, 92, 246, 0.5);
+        }
+      `}</style>
+
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300"
-        onClick={onClose}
-      />
+      <div className="member-modal-backdrop" onClick={onClose} />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full shadow-2xl animate-in fade-in zoom-in-95 duration-300">
-          {/* Header */}
-          <div className="relative h-24 bg-gradient-to-r from-purple-600 to-purple-400">
-            <button
-              onClick={onClose}
-              className="absolute top-3 right-3 p-1.5 hover:bg-white/20 rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5 text-white" />
+      <div className="member-modal">
+        <div className="member-modal-content">
+          <div className="modal-header">
+            <button onClick={onClose} className="modal-close-btn">
+              <X size={16} />
             </button>
           </div>
 
-          {/* Content */}
-          <div className="relative px-6 pb-6">
-            {/* Avatar */}
-            <div className="flex justify-center -mt-12 mb-4">
-              <div className="relative">
-                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-slate-800">
-                  <Image
-                    src={member.avatar}
-                    alt={member.name}
-                    width={128}
-                    height={128}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className={`absolute bottom-2 right-2 w-4 h-4 rounded-full ${statusColors[member.status]} ring-2 ring-slate-800`} />
+          <div className="modal-body">
+            <div className="member-avatar-large">
+              <Image
+                src={member.avatar}
+                alt={member.name}
+                width={100}
+                height={100}
+                className="member-avatar-img"
+              />
+              <div
+                className="member-status-indicator"
+                style={{ backgroundColor: statusColors[member.status] }}
+              >
+                {member.status === 'online' && '●'}
+                {member.status === 'idle' && '◐'}
+                {member.status === 'offline' && '○'}
               </div>
             </div>
 
-            {/* Name and role */}
-            <div className="text-center mb-4">
-              <h2 className="text-2xl font-bold text-white mb-1">{member.name}</h2>
-              <p className="text-purple-400 font-semibold mb-1">{member.role}</p>
-              <p className="text-sm text-slate-400">{statusText[member.status]}</p>
-            </div>
+            <h2 className="modal-name">{member.name}</h2>
+            <p className="modal-role">{member.role}</p>
 
-            {/* Bio */}
-            <p className="text-slate-300 text-sm text-center mb-6 leading-relaxed">
-              &ldquo;{member.bio}&rdquo;
-            </p>
+            <p className="modal-bio">&ldquo;{member.bio}&rdquo;</p>
 
-            {/* Info Grid */}
-            <div className="space-y-4 mb-6">
-              {/* Joined Date */}
-              <div>
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                  Bergabung
-                </p>
-                <p className="text-slate-200">{joinedDate}</p>
+            <div className="modal-info">
+              <div className="modal-info-row">
+                <span className="modal-info-label">Status</span>
+                <span className="modal-info-value">{statusText[member.status]}</span>
               </div>
-
-              {/* Games */}
-              <div>
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                  Game Favorit
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {member.gamesFavorite.map((game) => (
-                    <span
-                      key={game}
-                      className="inline-flex items-center px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/30 text-sm text-purple-300"
-                    >
-                      {game}
-                    </span>
-                  ))}
-                </div>
+              <div className="modal-info-row">
+                <span className="modal-info-label">Bergabung</span>
+                <span className="modal-info-value">{joinedDate}</span>
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-3">
-              <button className="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-colors duration-300">
-                DM
-              </button>
+            <div className="modal-games">
+              <p className="modal-games-label">Game Favorit</p>
+              <div className="modal-games-list">
+                {member.gamesFavorite.map((game) => (
+                  <span key={game} className="game-tag">
+                    {game}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="modal-footer">
               <button
                 onClick={onClose}
-                className="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-semibold transition-colors duration-300"
+                className="modal-btn modal-btn-close"
               >
                 Tutup
               </button>
