@@ -34,8 +34,7 @@ export default function MemberCardEnhanced({
       onMouseEnter={() => onHoverChange(true)}
       onMouseLeave={() => onHoverChange(false)}
       onMouseMove={handleMouseMove}
-      className="flex-shrink-0 w-80 cursor-pointer group/card relative"
-      style={{ scrollSnapAlign: 'center' }}
+      className="w-full cursor-pointer group/card relative"
     >
       {/* Spotlight effect on hover */}
       {isHovered && (
@@ -48,7 +47,7 @@ export default function MemberCardEnhanced({
       )}
 
       {/* Card Container */}
-      <div className="relative h-96 rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105">
+      <div className="relative h-full min-h-96 rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105">
         {/* Animated background layers */}
         <div
           className={`absolute inset-0 bg-gradient-to-br ${member.color} opacity-20 transition-all duration-500 ${
