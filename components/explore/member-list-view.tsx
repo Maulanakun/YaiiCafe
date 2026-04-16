@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { members } from '@/lib/members';
 import MemberDetailModal from './member-detail-modal';
 import MemberCardEnhanced from './member-card-enhanced';
-import MomentsCarousel from './moments-carousel';
 
 interface Props {
   onSelectMember: (memberId: string) => void;
@@ -36,18 +35,35 @@ export default function MemberListView({ onSelectMember }: Props) {
         </div>
       </div>
 
-      {/* Moments Carousel */}
+      {/* Members Grid with Responsive Scroll */}
       <div className="relative">
-        <MomentsCarousel />
-      </div>
-
-      {/* Members Grid */}
-      <div className="relative">
-        {/* Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+        {/* Desktop Grid / Mobile Horizontal Scroll */}
+        <div className="hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
           {members.map((member, index) => (
             <div
               key={member.id}
+              style={{
+                animation: `slideIn 0.6s ease-out ${index * 0.1}s backwards`,
+              }}
+            >
+              <MemberCardEnhanced
+                member={member}
+                onSelect={handleMemberClick}
+                isHovered={hoveredMember === member.id}
+                onHoverChange={(hovered) =>
+                  setHoveredMember(hovered ? member.id : null)
+                }
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Mobile/Tablet Horizontal Scroll */}
+        <div className="lg:hidden flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+          {members.map((member, index) => (
+            <div
+              key={member.id}
+              className="flex-shrink-0 w-80 snap-center"
               style={{
                 animation: `slideIn 0.6s ease-out ${index * 0.1}s backwards`,
               }}
