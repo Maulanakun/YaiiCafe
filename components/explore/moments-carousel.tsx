@@ -12,7 +12,7 @@ interface Moment {
   timestamp: string;
   likes: number;
   comments: number;
-  image?: string;
+  image: string;
 }
 
 const moments: Moment[] = [
@@ -21,55 +21,55 @@ const moments: Moment[] = [
     author: 'Maulana',
     avatar: 'M',
     color: 'from-purple-500 to-pink-500',
-    content: 'Just shipped a new 3D feature! The community feedback has been incredible. Thank you all for the support! 🚀',
+    content: 'Just shipped a new 3D feature! The community feedback has been incredible. Thank you all for the support!',
     timestamp: '2 hours ago',
     likes: 234,
     comments: 45,
-    image: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
+    image: 'https://images.unsplash.com/photo-1511379938547-c1f69b13d835?w=800&h=500&fit=crop',
   },
   {
     id: '2',
     author: 'Cafe Manager',
     avatar: 'C',
     color: 'from-cyan-500 to-blue-500',
-    content: 'YaiiCafe community event was a huge success! 200+ members participated. Can\'t wait for the next one! 🎉',
+    content: 'YaiiCafe community event was a huge success! 200+ members participated. Can\'t wait for the next one!',
     timestamp: '4 hours ago',
     likes: 567,
     comments: 89,
-    image: 'linear-gradient(135deg, #06b6d4 0%, #0ea5e9 100%)',
+    image: 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&h=500&fit=crop',
   },
   {
     id: '3',
     author: 'Dev Assistant',
     avatar: 'D',
     color: 'from-green-500 to-emerald-500',
-    content: 'Database optimization is complete! We\'ve improved query performance by 60%. Smooth sailing ahead! ⚡',
+    content: 'Database optimization is complete! We\'ve improved query performance by 60%. Smooth sailing ahead!',
     timestamp: '6 hours ago',
     likes: 345,
     comments: 67,
-    image: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=500&fit=crop',
   },
   {
     id: '4',
     author: 'Designer Pro',
     avatar: 'D',
     color: 'from-orange-500 to-red-500',
-    content: 'Unveiling the new UI redesign next week. The team worked so hard on this. Excited to share it with you all! 🎨',
+    content: 'Unveiling the new UI redesign next week. The team worked so hard on this. Excited to share it with you all!',
     timestamp: '1 day ago',
     likes: 456,
     comments: 92,
-    image: 'linear-gradient(135deg, #f97316 0%, #dc2626 100%)',
+    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=500&fit=crop',
   },
   {
     id: '5',
     author: 'Community Lead',
     avatar: 'C',
     color: 'from-indigo-500 to-purple-500',
-    content: 'Welcome to our 1000+ new members this week! We\'re growing so fast. The community spirit is amazing! 💜',
+    content: 'Welcome to our 1000+ new members this week! We\'re growing so fast. The community spirit is amazing!',
     timestamp: '1 day ago',
     likes: 789,
     comments: 156,
-    image: 'linear-gradient(135deg, #6366f1 0%, #7c3aed 100%)',
+    image: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=800&h=500&fit=crop',
   },
 ];
 
@@ -133,12 +133,11 @@ export default function MomentsCarousel() {
           ref={containerRef}
           className="relative h-80 rounded-3xl overflow-hidden"
         >
-          {/* Background with gradient */}
-          <div
-            className="absolute inset-0 transition-all duration-700"
-            style={{
-              background: currentMoment.image,
-            }}
+          {/* Background Image */}
+          <img
+            src={currentMoment.image}
+            alt={currentMoment.content}
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
           />
 
           {/* Overlay */}
