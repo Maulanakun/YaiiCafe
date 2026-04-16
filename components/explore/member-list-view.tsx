@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { members } from '@/lib/members';
 import MemberDetailModal from './member-detail-modal';
+import MemberCardEnhanced from './member-card-enhanced';
 
 interface Props {
   onSelectMember: (memberId: string) => void;
@@ -46,20 +47,30 @@ export default function MemberListView({ onSelectMember }: Props) {
   };
 
   return (
-    <div className="w-full space-y-8">
-      {/* Title */}
-      <div className="text-center space-y-2">
-        <h2 className="text-4xl font-bold font-syne text-white">Meet the Team</h2>
-        <p className="text-purple-300">Our dedicated members making YaiiCafe amazing</p>
+    <div className="w-full space-y-12">
+      {/* Title Section with enhanced styling */}
+      <div className="text-center space-y-4">
+        <div className="relative inline-block mx-auto">
+          <div className="absolute -inset-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg blur opacity-20 group-hover:opacity-100 transition duration-1000" />
+          <h2 className="relative text-5xl font-bold font-syne text-white bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+            Meet the Team
+          </h2>
+        </div>
+        <p className="text-lg text-purple-300 font-syne">Our dedicated members making YaiiCafe amazing</p>
+        <div className="flex justify-center gap-2 mt-4">
+          <div className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-pulse" />
+          <div className="w-2 h-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 animate-pulse" style={{ animationDelay: '0.2s' }} />
+          <div className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-pulse" style={{ animationDelay: '0.4s' }} />
+        </div>
       </div>
 
-      {/* Carousel */}
+      {/* Carousel with enhanced styling */}
       <div className="relative group">
         {/* Left Scroll Button */}
         {canScrollLeft && (
           <button
             onClick={() => scroll('left')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-gradient-to-r from-[#05050f] to-transparent px-6 py-3 text-purple-400 hover:text-purple-200 transition-colors duration-300"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-gradient-to-r from-[#05050f] via-purple-500/10 to-transparent px-6 py-3 text-purple-400 hover:text-purple-200 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/50 rounded-r-xl"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -71,110 +82,27 @@ export default function MemberListView({ onSelectMember }: Props) {
         <div
           ref={containerRef}
           onScroll={checkScroll}
-          className="flex gap-6 overflow-x-auto scrollbar-hide pb-4"
+          className="flex gap-8 overflow-x-auto scrollbar-hide pb-6 px-4"
           style={{
             scrollBehavior: 'smooth',
             scrollSnapType: 'x mandatory',
           }}
         >
-          {members.map((member) => (
+          {members.map((member, index) => (
             <div
               key={member.id}
-              onClick={() => handleMemberClick(member.id)}
-              onMouseEnter={() => setHoveredMember(member.id)}
-              onMouseLeave={() => setHoveredMember(null)}
-              className="flex-shrink-0 w-80 cursor-pointer group/card"
-              style={{ scrollSnapAlign: 'center' }}
+              style={{
+                animation: `slideIn 0.6s ease-out ${index * 0.1}s backwards`,
+              }}
             >
-              {/* Card */}
-              <div className="relative h-96 rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105">
-                {/* Background Image Placeholder with gradient */}
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${member.color} opacity-20 transition-opacity duration-500`}
-                  style={{
-                    backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="rgba(0,0,0,0.5)"/><rect width="100" height="100" fill="url(%23grid)" /></svg>')`,
-                  }}
-                />
-
-                {/* Glow Effect */}
-                <div
-                  className={`absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 ${
-                    hoveredMember === member.id
-                      ? `bg-gradient-to-br ${member.color} blur-3xl`
-                      : 'bg-transparent'
-                  }`}
-                  style={{
-                    filter: hoveredMember === member.id ? 'blur(30px)' : 'blur(0px)',
-                    opacity: hoveredMember === member.id ? 0.15 : 0,
-                  }}
-                />
-
-                {/* Border */}
-                <div
-                  className={`absolute inset-0 border rounded-2xl transition-all duration-500 ${
-                    hoveredMember === member.id
-                      ? `border-transparent bg-gradient-to-br ${member.color}`
-                      : 'border-purple-500/30'
-                  }`}
-                  style={{
-                    background:
-                      hoveredMember === member.id
-                        ? `linear-gradient(${member.color})`
-                        : 'transparent',
-                    padding: hoveredMember === member.id ? '2px' : '0px',
-                  }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#05050f] to-[#1a0033] rounded-2xl" />
-                </div>
-
-                {/* Content */}
-                <div className="relative h-full p-6 flex flex-col justify-between z-10">
-                  {/* Top Section */}
-                  <div className="space-y-4">
-                    {/* Avatar */}
-                    <div className="w-24 h-24 rounded-xl overflow-hidden border-2 border-purple-500/50 shadow-lg">
-                      <div
-                        className={`w-full h-full bg-gradient-to-br ${member.color} flex items-center justify-center text-3xl font-bold`}
-                      >
-                        {member.name.charAt(0)}
-                      </div>
-                    </div>
-
-                    {/* Name & Role */}
-                    <div className="space-y-1">
-                      <h3 className="text-2xl font-bold font-syne text-white">{member.name}</h3>
-                      <p className={`text-sm font-syne font-semibold bg-gradient-to-r ${member.color} bg-clip-text text-transparent`}>
-                        {member.role}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Bottom Section */}
-                  <div className="space-y-3">
-                    {/* Bio */}
-                    <p className="text-sm text-purple-300 line-clamp-2">{member.bio}</p>
-
-                    {/* Specialties */}
-                    <div className="flex flex-wrap gap-2">
-                      {member.specialties.slice(0, 2).map((spec) => (
-                        <span
-                          key={spec}
-                          className="px-2 py-1 text-xs rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                        >
-                          {spec}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Click to view */}
-                    <div className="pt-2">
-                      <span className="inline-block text-xs font-syne font-semibold text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
-                        Click to view details →
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <MemberCardEnhanced
+                member={member}
+                onSelect={handleMemberClick}
+                isHovered={hoveredMember === member.id}
+                onHoverChange={(hovered) =>
+                  setHoveredMember(hovered ? member.id : null)
+                }
+              />
             </div>
           ))}
         </div>
@@ -183,13 +111,17 @@ export default function MemberListView({ onSelectMember }: Props) {
         {canScrollRight && (
           <button
             onClick={() => scroll('right')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-gradient-to-l from-[#05050f] to-transparent px-6 py-3 text-purple-400 hover:text-purple-200 transition-colors duration-300"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-gradient-to-l from-[#05050f] via-purple-500/10 to-transparent px-6 py-3 text-purple-400 hover:text-purple-200 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/50 rounded-l-xl"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         )}
+
+        {/* Decorative elements */}
+        <div className="absolute top-0 left-1/4 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500" />
+        <div className="absolute bottom-0 right-1/4 w-40 h-40 bg-pink-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500" />
       </div>
 
       {/* Member Detail Modal */}
@@ -199,6 +131,19 @@ export default function MemberListView({ onSelectMember }: Props) {
           onClose={() => setSelectedMember(null)}
         />
       )}
+
+      <style>{`
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }
