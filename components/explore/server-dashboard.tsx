@@ -114,21 +114,21 @@ export default function ServerDashboard() {
   ];
 
   return (
-    <div className="w-full space-y-12">
+    <div className="w-full space-y-8 sm:space-y-10 md:space-y-12 px-4 sm:px-6 lg:px-8">
       {/* Moments Carousel Section */}
       <div className="relative">
         <MomentsCarousel />
       </div>
 
       {/* Title Section */}
-      <div className="text-center space-y-4">
+      <div className="text-center space-y-2 sm:space-y-3 md:space-y-4">
         <div className="relative inline-block mx-auto">
           <div className="absolute -inset-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg blur opacity-20 group-hover:opacity-100 transition duration-1000" />
-          <h2 className="relative text-5xl font-bold font-syne text-white bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+          <h2 className="relative text-3xl sm:text-4xl md:text-5xl font-bold font-syne text-white bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
             About YaiiCafe Server
           </h2>
         </div>
-        <p className="text-lg text-purple-300 font-syne">Discover what makes YaiiCafe special</p>
+        <p className="text-sm sm:text-base md:text-lg text-purple-300 font-syne">Discover what makes YaiiCafe special</p>
         <div className="flex justify-center gap-2 mt-4">
           <div className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-pulse" />
           <div
@@ -144,8 +144,8 @@ export default function ServerDashboard() {
 
       {/* Owner Facts Section */}
       <div className="relative">
-        <h3 className="text-2xl font-bold font-syne text-white mb-6">Server Founder & Facts</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <h3 className="text-xl sm:text-2xl font-bold font-syne text-white mb-4 sm:mb-6">Server Founder & Facts</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {ownerFacts.map((fact, index) => (
             <div
               key={fact.id}
@@ -167,18 +167,18 @@ export default function ServerDashboard() {
                 />
 
                 {/* Content */}
-                <div className="relative p-6 h-full flex flex-col justify-between z-10">
+                <div className="relative p-4 sm:p-6 h-full flex flex-col justify-between z-10">
                   <div>
-                    <div className="text-4xl mb-3">{fact.icon}</div>
-                    <p className="text-sm text-purple-300 font-syne uppercase tracking-wider">
+                    <div className="text-2xl sm:text-4xl mb-2 sm:mb-3">{fact.icon}</div>
+                    <p className="text-xs sm:text-sm text-purple-300 font-syne uppercase tracking-wider">
                       {fact.title}
                     </p>
                   </div>
                   <div>
-                    <p className={`text-2xl font-bold bg-gradient-to-r ${fact.color} bg-clip-text text-transparent font-syne`}>
+                    <p className={`text-xl sm:text-2xl font-bold bg-gradient-to-r ${fact.color} bg-clip-text text-transparent font-syne`}>
                       {fact.value}
                     </p>
-                    <p className="text-xs text-purple-300/60 mt-2">{fact.description}</p>
+                    <p className="text-xs text-purple-300/60 mt-1 sm:mt-2">{fact.description}</p>
                   </div>
                 </div>
               </div>
@@ -189,8 +189,8 @@ export default function ServerDashboard() {
 
       {/* Server Features Section */}
       <div className="relative">
-        <h3 className="text-2xl font-bold font-syne text-white mb-6">What's Inside YaiiCafe?</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <h3 className="text-xl sm:text-2xl font-bold font-syne text-white mb-4 sm:mb-6">What's Inside YaiiCafe?</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {[
             {
               id: 'community',
@@ -277,14 +277,14 @@ export default function ServerDashboard() {
                 />
 
                 {/* Content */}
-                <div className="relative p-6 h-full flex flex-col justify-between z-10">
+                <div className="relative p-4 sm:p-6 h-full flex flex-col justify-between z-10">
                   <div>
-                    <span className="text-4xl block mb-3">{feature.icon}</span>
-                    <p className={`text-lg font-bold bg-gradient-to-r ${feature.color} bg-clip-text text-transparent font-syne`}>
+                    <span className="text-2xl sm:text-4xl block mb-2 sm:mb-3">{feature.icon}</span>
+                    <p className={`text-base sm:text-lg font-bold bg-gradient-to-r ${feature.color} bg-clip-text text-transparent font-syne`}>
                       {feature.label}
                     </p>
                   </div>
-                  <p className="text-sm text-purple-300 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-purple-300 leading-relaxed">
                     {feature.description}
                   </p>
                 </div>

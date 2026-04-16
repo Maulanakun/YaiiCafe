@@ -18,27 +18,27 @@ export default function MemberListView({ onSelectMember }: Props) {
   };
 
   return (
-    <div className="w-full space-y-12">
+    <div className="w-full space-y-6 sm:space-y-8 md:space-y-12 px-4 sm:px-6 lg:px-0">
       {/* Title Section with enhanced styling */}
-      <div className="text-center space-y-4">
+      <div className="text-center space-y-2 sm:space-y-3 md:space-y-4">
         <div className="relative inline-block mx-auto">
           <div className="absolute -inset-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg blur opacity-20 group-hover:opacity-100 transition duration-1000" />
-          <h2 className="relative text-5xl font-bold font-syne text-white bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+          <h2 className="relative text-3xl sm:text-4xl md:text-5xl font-bold font-syne text-white bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
             Meet the Team
           </h2>
         </div>
-        <p className="text-lg text-purple-300 font-syne">Our dedicated members making YaiiCafe amazing</p>
-        <div className="flex justify-center gap-2 mt-4">
-          <div className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-pulse" />
-          <div className="w-2 h-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 animate-pulse" style={{ animationDelay: '0.2s' }} />
-          <div className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-pulse" style={{ animationDelay: '0.4s' }} />
+        <p className="text-xs sm:text-sm md:text-lg text-purple-300 font-syne">Our dedicated members making YaiiCafe amazing</p>
+        <div className="flex justify-center gap-1 sm:gap-2 mt-3 sm:mt-4">
+          <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-pulse" />
+          <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 animate-pulse" style={{ animationDelay: '0.2s' }} />
+          <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-pulse" style={{ animationDelay: '0.4s' }} />
         </div>
       </div>
 
       {/* Members Grid with Responsive Scroll */}
       <div className="relative">
         {/* Desktop Grid / Mobile Horizontal Scroll */}
-        <div className="hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+        <div className="hidden lg:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {members.map((member, index) => (
             <div
               key={member.id}
@@ -59,11 +59,11 @@ export default function MemberListView({ onSelectMember }: Props) {
         </div>
 
         {/* Mobile/Tablet Horizontal Scroll */}
-        <div className="lg:hidden flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+        <div className="lg:hidden flex gap-3 sm:gap-4 md:gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
           {members.map((member, index) => (
             <div
               key={member.id}
-              className="flex-shrink-0 w-80 snap-center"
+              className="flex-shrink-0 w-72 sm:w-80 snap-center"
               style={{
                 animation: `slideIn 0.6s ease-out ${index * 0.1}s backwards`,
               }}
@@ -81,8 +81,8 @@ export default function MemberListView({ onSelectMember }: Props) {
         </div>
 
         {/* Decorative elements */}
-        <div className="absolute -top-40 left-1/4 w-60 h-60 bg-purple-500/20 rounded-full blur-3xl opacity-30 pointer-events-none" />
-        <div className="absolute -bottom-40 right-1/4 w-60 h-60 bg-pink-500/20 rounded-full blur-3xl opacity-30 pointer-events-none" />
+        <div className="absolute -top-20 sm:-top-40 left-1/4 w-40 sm:w-60 h-40 sm:h-60 bg-purple-500/20 rounded-full blur-3xl opacity-20 sm:opacity-30 pointer-events-none" />
+        <div className="absolute -bottom-20 sm:-bottom-40 right-1/4 w-40 sm:w-60 h-40 sm:h-60 bg-pink-500/20 rounded-full blur-3xl opacity-20 sm:opacity-30 pointer-events-none" />
       </div>
 
       {/* Member Detail Modal */}

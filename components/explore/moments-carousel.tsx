@@ -119,11 +119,11 @@ export default function MomentsCarousel() {
   const currentMoment = moments[currentIndex];
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-6 sm:space-y-8 px-4 sm:px-6 lg:px-0">
       {/* Title */}
-      <div className="text-center space-y-2">
-        <h3 className="text-3xl font-bold font-syne text-white">Moments</h3>
-        <p className="text-purple-300 text-sm">Latest updates from our community</p>
+      <div className="text-center space-y-1 sm:space-y-2">
+        <h3 className="text-2xl sm:text-3xl font-bold font-syne text-white">Moments</h3>
+        <p className="text-xs sm:text-sm text-purple-300">Latest updates from our community</p>
       </div>
 
       {/* Main Carousel */}
@@ -131,7 +131,7 @@ export default function MomentsCarousel() {
         {/* Carousel Container */}
         <div
           ref={containerRef}
-          className="relative h-80 rounded-3xl overflow-hidden"
+          className="relative h-48 sm:h-64 md:h-80 rounded-2xl sm:rounded-3xl overflow-hidden"
         >
           {/* Background Image */}
           <img
@@ -145,66 +145,66 @@ export default function MomentsCarousel() {
 
           {/* Content with animation */}
           <div
-            className="absolute inset-0 p-8 flex flex-col justify-between"
+            className="absolute inset-0 p-4 sm:p-6 md:p-8 flex flex-col justify-between"
             style={{
               animation: `slideIn${direction === 'right' ? 'FromRight' : 'FromLeft'} 0.6s ease-out`,
             }}
           >
             {/* Top Section */}
-            <div className="space-y-4">
+            <div className="space-y-2 sm:space-y-3 md:space-y-4">
               {/* Avatar & Author Info */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
                 <div
-                  className={`w-14 h-14 rounded-full bg-gradient-to-br ${currentMoment.color} flex items-center justify-center text-xl font-bold text-white`}
+                  className={`w-10 sm:w-12 md:w-14 h-10 sm:h-12 md:h-14 rounded-full bg-gradient-to-br ${currentMoment.color} flex items-center justify-center text-sm sm:text-lg md:text-xl font-bold text-white`}
                 >
                   {currentMoment.avatar}
                 </div>
                 <div>
-                  <p className="font-syne font-semibold text-white text-lg">
+                  <p className="font-syne font-semibold text-white text-sm sm:text-base md:text-lg">
                     {currentMoment.author}
                   </p>
-                  <p className="text-sm text-purple-200">{currentMoment.timestamp}</p>
+                  <p className="text-xs sm:text-sm text-purple-200">{currentMoment.timestamp}</p>
                 </div>
               </div>
 
               {/* Content */}
-              <p className="text-purple-50 text-lg leading-relaxed line-clamp-3">
+              <p className="text-purple-50 text-xs sm:text-sm md:text-lg leading-relaxed line-clamp-2 sm:line-clamp-3">
                 {currentMoment.content}
               </p>
             </div>
 
             {/* Bottom Section - Actions */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
+            <div className="flex items-center justify-between gap-2 sm:gap-4">
+              <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
                 <button
                   onClick={() => toggleLike(currentMoment.id)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 hover:bg-white/10"
+                  className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-2 rounded-lg transition-all duration-300 hover:bg-white/10"
                 >
                   <Heart
-                    size={20}
-                    className={`transition-all duration-300 ${
+                    size={16}
+                    className={`sm:w-5 sm:h-5 transition-all duration-300 ${
                       likedMoments.has(currentMoment.id)
                         ? 'fill-pink-500 text-pink-500'
                         : 'text-purple-200'
                     }`}
                   />
-                  <span className="text-sm text-purple-200">
+                  <span className="text-xs sm:text-sm text-purple-200">
                     {currentMoment.likes + (likedMoments.has(currentMoment.id) ? 1 : 0)}
                   </span>
                 </button>
 
-                <button className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-all duration-300">
-                  <MessageCircle size={20} className="text-purple-200" />
-                  <span className="text-sm text-purple-200">{currentMoment.comments}</span>
+                <button className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-2 rounded-lg hover:bg-white/10 transition-all duration-300">
+                  <MessageCircle size={16} className="sm:w-5 sm:h-5 text-purple-200" />
+                  <span className="text-xs sm:text-sm text-purple-200">{currentMoment.comments}</span>
                 </button>
 
-                <button className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-all duration-300">
-                  <Share2 size={20} className="text-purple-200" />
+                <button className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-2 rounded-lg hover:bg-white/10 transition-all duration-300">
+                  <Share2 size={16} className="sm:w-5 sm:h-5 text-purple-200" />
                 </button>
               </div>
 
               {/* Indicator */}
-              <div className="text-sm text-purple-300 font-mono">
+              <div className="text-xs sm:text-sm text-purple-300 font-mono">
                 {String(currentIndex + 1).padStart(2, '0')} / {String(moments.length).padStart(2, '0')}
               </div>
             </div>
@@ -214,18 +214,18 @@ export default function MomentsCarousel() {
         {/* Navigation Buttons */}
         <button
           onClick={handlePrev}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100 backdrop-blur-sm"
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100 backdrop-blur-sm"
           aria-label="Previous"
         >
-          <ChevronLeft className="w-6 h-6 text-white" />
+          <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </button>
 
         <button
           onClick={handleNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100 backdrop-blur-sm"
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100 backdrop-blur-sm"
           aria-label="Next"
         >
-          <ChevronRight className="w-6 h-6 text-white" />
+          <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </button>
 
         {/* Decorative elements */}
@@ -234,7 +234,7 @@ export default function MomentsCarousel() {
       </div>
 
       {/* Thumbnail/Indicator Dots */}
-      <div className="flex justify-center gap-2 px-4 flex-wrap">
+      <div className="flex justify-center gap-1 sm:gap-2 px-4 flex-wrap">
         {moments.map((_, index) => (
           <button
             key={index}
@@ -243,10 +243,10 @@ export default function MomentsCarousel() {
               setCurrentIndex(index);
               setIsAutoPlay(false);
             }}
-            className={`h-2 rounded-full transition-all duration-300 ${
+            className={`h-1 sm:h-2 rounded-full transition-all duration-300 ${
               index === currentIndex
-                ? 'bg-gradient-to-r from-purple-500 to-pink-500 w-8'
-                : 'bg-white/20 w-2 hover:bg-white/40'
+                ? 'bg-gradient-to-r from-purple-500 to-pink-500 w-6 sm:w-8'
+                : 'bg-white/20 w-1 sm:w-2 hover:bg-white/40'
             }`}
             aria-label={`Go to moment ${index + 1}`}
           />
