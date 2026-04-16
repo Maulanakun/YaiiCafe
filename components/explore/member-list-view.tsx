@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { members } from '@/lib/members';
 import MemberDetailModal from './member-detail-modal';
 import MemberCardEnhanced from './member-card-enhanced';
+import MomentsCarousel from './moments-carousel';
 
 interface Props {
   onSelectMember: (memberId: string) => void;
@@ -33,6 +34,11 @@ export default function MemberListView({ onSelectMember }: Props) {
           <div className="w-2 h-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 animate-pulse" style={{ animationDelay: '0.2s' }} />
           <div className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-pulse" style={{ animationDelay: '0.4s' }} />
         </div>
+      </div>
+
+      {/* Moments Carousel */}
+      <div className="relative">
+        <MomentsCarousel />
       </div>
 
       {/* Members Grid */}

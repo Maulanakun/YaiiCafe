@@ -5,7 +5,7 @@ import MemberListView from '@/components/explore/member-list-view';
 import MomentsView from '@/components/explore/moments-view';
 import AvatarView from '@/components/explore/avatar-view';
 import BackButton from '@/components/explore/back-button';
-import Member3DBackground from '@/components/explore/member-3d-background';
+import Explore3DBackground from '@/components/explore/explore-3d-background';
 
 export default function ExplorePage() {
   const [activeSection, setActiveSection] = useState<'members' | 'moments' | 'avatars'>('members');
@@ -14,7 +14,7 @@ export default function ExplorePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#05050f] via-[#1a0033] to-[#05050f] text-white overflow-hidden relative">
       {/* 3D Background */}
-      {activeSection === 'members' && <Member3DBackground />}
+      <Explore3DBackground />
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 z-50 border-b border-purple-500/20 bg-[#05050f]/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
