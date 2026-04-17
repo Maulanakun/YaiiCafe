@@ -18,17 +18,17 @@ const Avatar3DScene = dynamic(() => import('./avatar-3d-scene'), {
 const avatars = [
   {
     id: '1',
-    name: 'Maulana Avatar',
-    description: 'The founder\'s signature look',
+    name: 'dayat gosling',
+    description: 'yang mulia baginda raja mahasigmaw farm 1000++',
     color: 'from-purple-500 to-pink-500',
     glbUrl: '/dayat.glb', // <-- path ke file GLB
   },
   {
     id: '2',
-    name: 'Cafe Manager Avatar',
-    description: 'Friendly and welcoming',
+    name: 'ucy',
+    description: 'kanjeng ratu',
     color: 'from-cyan-500 to-blue-500',
-    glbUrl: '/ucy (1).glb',
+    glbUrl: '/ucy bocil.glb',
   },
   // ... dst
 ];

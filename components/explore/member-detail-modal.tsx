@@ -131,12 +131,16 @@ export default function MemberDetailModal({ member, onClose }: Props) {
               <div className="space-y-4">
                 <h3 className="text-lg font-syne font-bold text-white">Specialties</h3>
                 <div className="flex flex-wrap gap-2">
-                  {member.specialties.map((spec) => (
+                  {member.specialties.map((spec, index) => (
                     <div
                       key={spec}
-                      className={`px-4 py-2 rounded-full text-sm font-semibold text-white bg-gradient-to-r ${member.color} opacity-80 hover:opacity-100 transition-opacity duration-300`}
+                      className={`px-4 py-2 rounded-full text-sm font-semibold text-white bg-gradient-to-r ${member.color} opacity-80 hover:opacity-100 transition-all duration-300 transform hover:scale-110 cursor-pointer group relative`}
+                      style={{
+                        animation: `slideInSpec 0.5s ease-out ${index * 0.1}s backwards`,
+                      }}
                     >
                       {spec}
+                      <div className="absolute inset-0 rounded-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
                     </div>
                   ))}
                 </div>
@@ -165,6 +169,22 @@ export default function MemberDetailModal({ member, onClose }: Props) {
         @keyframes pulse {
           0%, 100% { opacity: 10%; }
           50% { opacity: 20%; }
+        }
+
+        @keyframes slideInSpec {
+          from {
+            opacity: 0;
+            transform: translateX(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes shimmerBg {
+          0%, 100% { opacity: 0.1; }
+          50% { opacity: 0.25; }
         }
       `}</style>
     </>
